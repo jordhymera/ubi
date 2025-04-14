@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Verificación Biométrica Falsa</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #121212;
+      color: #0f0;
+      font-family: monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    #videoContainer {
+      border: 2px solid #0f0;
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+
+    #scanText {
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    #startBtn, #stopBtn {
+      background-color: #0f0;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      margin: 10px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div id="scanText">Iniciando escaneo biométrico facial...</div>
+  <div id="videoContainer">
+    <video id="video" width="300" height="220" autoplay muted></video>
+  </div>
+  <div>
+    <button id="startBtn" onclick="iniciarEscaneo()">Iniciar escaneo</button>
+    <button id="stopBtn" onclick="detenerEscaneo()">Detener</button>
+  </div>
+
+  <script>
+    let stream = null;
+
+    function iniciarEscaneo() {
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function(mediaStream) {
+          stream = mediaStream;
+          const video = document.getElementById('video');
+          video.srcObject = stream;
+          document.getElementById('scanText').innerText = 'Escaneando rostro... Mantente quieto';
+        })
+        .catch(function(err) {
+          document.getElementById('scanText').innerText = 'No se pudo acceder a la cámara';
+        });
+    }
+
+    function detenerEscaneo() {
+      if (stream) {
+        const tracks = stream.getTracks();
+        tracks.forEach(track => track.stop());
+        document.getElementById('video').srcObject = null;
+        document.getElementById('scanText').innerText = 'Escaneo detenido';
+      }
+    }
+  </script>
+</body>
+</html>
